@@ -40,7 +40,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Выбери настроение с клавиатуры ниже!")
 
 # Создаём и запускаем бота
-app = ApplicationBuilder().token("ТВОЙ_ТОКЕН_БОТА").build()
+app = ApplicationBuilder().token("8190690928:AAG2o10BVhz1d_mLV3zXsqv5hdiKP6aXUxw").build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("help", help_command))
