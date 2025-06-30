@@ -1,40 +1,13 @@
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+import json
 import random
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-# Настроения и треки
-MOODS = {
-    "Грустно": [
-        ("Billie Eilish – idontwannabeyouanymore", "https://youtu.be/pbMwTqkKSps"),
-        ("Joji – Slow Dancing in the Dark", "https://youtu.be/K3Qzzggn--s")
-    ],
-    "Счастье": [
-        ("Pharrell Williams – Happy", "https://youtu.be/ZbZSe6N_BXs"),
-        ("Justin Timberlake – Can't Stop the Feeling", "https://youtu.be/ru0K8uYEZWw")
-    ],
-    "Влюблён": [
-        ("Ed Sheeran – Perfect", "https://youtu.be/2Vv-BfVoq4g"),
-        ("The Weeknd – Earned It", "https://youtu.be/waU75jdUnYw")
-    ],
-    "Мотивация": [
-        ("Eminem – Lose Yourself", "https://youtu.be/_Yhyp-_hX2s"),
-        ("Imagine Dragons – Believer", "https://youtu.be/7wtfhZwyrcc")
-    ],
-    "Злость": [
-        ("Kanye West – Black Skinhead", "https://youtu.be/RrEzrJgG5y8")
-    ],
-    "Уют": [
-        ("Norah Jones – Don't Know Why", "https://youtu.be/tO4dxvguQDk")
-    ],
-    "Чилл": [
-        ("Post Malone – Circles", "https://youtu.be/wXhTHyIgQ_U")
-    ],
-    "Энергия": [
-        ("AC/DC – Thunderstruck", "https://youtu.be/v2AC41dglnM")
-    ]
-}
+# Загружаем треки из файла
+with open("tracks.json", "r", encoding="utf-8") as f:
+    MOODS = json.load(f)
 
-# Приветствие при /start
+# Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [[mood] for mood in MOODS.keys()]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
@@ -43,7 +16,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
-# Ответ на выбор настроения
+# Команда /help
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    help_text = (
+        "🤖 *Эмо DJ* – бот, который подбирает музыку под настроение!\n\n"
+        "📌 *Команды:*\n"
+        "/start – начать заново и выбрать настроение\n"
+        "/help – показать это сообщение\n\n"
+        "Или просто нажми кнопку с настроением! 🎵"
+    )
+    await update.message.reply_text(help_text, parse_mode="Markdown")
+
+# Обработка сообщений (выбор настроения)
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_mood = update.message.text
     if user_mood in MOODS:
@@ -55,8 +39,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Выбери настроение с клавиатуры ниже!")
 
-app = ApplicationBuilder().token("8190690928:AAG2o10BVhz1d_mLV3zXsqv5hdiKP6aXUxw").build()
+# Создаём и запускаем бота
+app = ApplicationBuilder().token("ТВОЙ_ТОКЕН_БОТА").build()
+
 app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("help", help_command))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
 app.run_polling()
