@@ -40,7 +40,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [[mood] for mood in MOODS.keys()]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     await update.message.reply_text(
-        "🎧 Привет! Я Эмо DJ.
+       "🎧 Привет! Я Эмо DJ.\nВыбери своё настроение, и я подберу трек!"
 Выбери своё настроение, и я подберу трек!",
         reply_markup=reply_markup
     )
